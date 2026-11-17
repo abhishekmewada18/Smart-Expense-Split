@@ -1,0 +1,257 @@
+{
+  "info": {
+    "name": "Smart Expense Split & Settlement System",
+    "_postman_id": "c7117e30-b3b3-469b-9860-256cf7639f77",
+    "description": "Collection of all REST API endpoints for the Smart Expense Split & Settlement System including Users, Groups, Expenses, Balances, and Greedy Settlements.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "groupId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "expenseId",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Users",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Rohan Mehta\",\n  \"email\": \"rohan@example.com\",\n  \"phone\": \"9876500001\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/api/users", "host": ["{{baseUrl}}"], "path": ["api", "users"]}
+          }
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/api/users", "host": ["{{baseUrl}}"], "path": ["api", "users"]}
+          }
+        },
+        {
+          "name": "Get User By ID",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/api/users/{{userId}}", "host": ["{{baseUrl}}"], "path": ["api", "users", "{{userId}}"]}
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Rahul Sharma Updated\",\n  \"email\": \"rahul@example.com\",\n  \"phone\": \"9876543299\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/api/users/{{userId}}", "host": ["{{baseUrl}}"], "path": ["api", "users", "{{userId}}"]}
+          }
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "url": {"raw": "{{baseUrl}}/api/users/5", "host": ["{{baseUrl}}"], "path": ["api", "users", "5"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Groups",
+      "item": [
+        {
+          "name": "Create Group",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Manali Road Trip\",\n  \"description\": \"Road trip with college friends\",\n  \"createdById\": 1,\n  \"initialMemberUserIds\": [2, 3]\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/api/groups", "host": ["{{baseUrl}}"], "path": ["api", "groups"]}
+          }
+        },
+        {
+          "name": "Get All Groups",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/api/groups", "host": ["{{baseUrl}}"], "path": ["api", "groups"]}
+          }
+        },
+        {
+          "name": "Get Group By ID",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/api/groups/{{groupId}}", "host": ["{{baseUrl}}"], "path": ["api", "groups", "{{groupId}}"]}
+          }
+        },
+        {
+          "name": "Add Member to Group",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 4\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/api/groups/{{groupId}}/members", "host": ["{{baseUrl}}"], "path": ["api", "groups", "{{groupId}}", "members"]}
+          }
+        },
+        {
+          "name": "Remove Member from Group",
+          "request": {
+            "method": "DELETE",
+            "url": {"raw": "{{baseUrl}}/api/groups/{{groupId}}/members/4", "host": ["{{baseUrl}}"], "path": ["api", "groups", "{{groupId}}", "members", "4"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Expenses",
+      "item": [
+        {
+          "name": "Add Expense (EQUAL Split - Prompt Scenario)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Seafood Dinner at Beachside Shack\",\n  \"totalAmount\": 900.00,\n  \"paidById\": 1,\n  \"splitType\": \"EQUAL\",\n  \"expenseDate\": \"2026-11-17\",\n  \"splits\": [\n    {\"userId\": 1},\n    {\"userId\": 2},\n    {\"userId\": 3}\n  ]\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/api/groups/{{groupId}}/expenses", "host": ["{{baseUrl}}"], "path": ["api", "groups", "{{groupId}}", "expenses"]}
+          }
+        },
+        {
+          "name": "Add Expense (EXACT Split)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Cab Fare\",\n  \"totalAmount\": 500.00,\n  \"paidById\": 2,\n  \"splitType\": \"EXACT\",\n  \"expenseDate\": \"2026-11-17\",\n  \"splits\": [\n    {\"userId\": 1, \"amount\": 250.00},\n    {\"userId\": 2, \"amount\": 150.00},\n    {\"userId\": 3, \"amount\": 100.00}\n  ]\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/api/groups/{{groupId}}/expenses", "host": ["{{baseUrl}}"], "path": ["api", "groups", "{{groupId}}", "expenses"]}
+          }
+        },
+        {
+          "name": "Add Expense (PERCENTAGE Split)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Water Sports Package\",\n  \"totalAmount\": 1500.00,\n  \"paidById\": 3,\n  \"splitType\": \"PERCENTAGE\",\n  \"expenseDate\": \"2026-11-17\",\n  \"splits\": [\n    {\"userId\": 1, \"percentage\": 50.00},\n    {\"userId\": 2, \"percentage\": 30.00},\n    {\"userId\": 3, \"percentage\": 20.00}\n  ]\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/api/groups/{{groupId}}/expenses", "host": ["{{baseUrl}}"], "path": ["api", "groups", "{{groupId}}", "expenses"]}
+          }
+        },
+        {
+          "name": "Get Group Expenses",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/api/groups/{{groupId}}/expenses", "host": ["{{baseUrl}}"], "path": ["api", "groups", "{{groupId}}", "expenses"]}
+          }
+        },
+        {
+          "name": "Get Expense By ID",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/api/expenses/{{expenseId}}", "host": ["{{baseUrl}}"], "path": ["api", "expenses", "{{expenseId}}"]}
+          }
+        },
+        {
+          "name": "Update Expense",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Seafood Dinner & Drinks\",\n  \"totalAmount\": 1200.00,\n  \"paidById\": 1,\n  \"splitType\": \"EQUAL\",\n  \"expenseDate\": \"2026-11-17\",\n  \"splits\": [\n    {\"userId\": 1},\n    {\"userId\": 2},\n    {\"userId\": 3}\n  ]\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/api/expenses/{{expenseId}}", "host": ["{{baseUrl}}"], "path": ["api", "expenses", "{{expenseId}}"]}
+          }
+        },
+        {
+          "name": "Delete Expense",
+          "request": {
+            "method": "DELETE",
+            "url": {"raw": "{{baseUrl}}/api/expenses/{{expenseId}}", "host": ["{{baseUrl}}"], "path": ["api", "expenses", "{{expenseId}}"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Balances",
+      "item": [
+        {
+          "name": "Get Group Balances (Net Balance Calculation)",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/api/groups/{{groupId}}/balances", "host": ["{{baseUrl}}"], "path": ["api", "groups", "{{groupId}}", "balances"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Smart Settlement",
+      "item": [
+        {
+          "name": "Get Settlement Suggestions (Greedy Min-Cash-Flow)",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/api/groups/{{groupId}}/settlements/suggestions", "host": ["{{baseUrl}}"], "path": ["api", "groups", "{{groupId}}", "settlements", "suggestions"]}
+          }
+        },
+        {
+          "name": "Record Settlement Payment",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paidById\": 2,\n  \"paidToId\": 1,\n  \"amount\": 300.00,\n  \"settlementDate\": \"2026-11-17\",\n  \"notes\": \"Paid ₹300 to Rahul via GPay\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/api/groups/{{groupId}}/settlements", "host": ["{{baseUrl}}"], "path": ["api", "groups", "{{groupId}}", "settlements"]}
+          }
+        },
+        {
+          "name": "Get Settlement History",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/api/groups/{{groupId}}/settlements/history", "host": ["{{baseUrl}}"], "path": ["api", "groups", "{{groupId}}", "settlements", "history"]}
+          }
+        },
+        {
+          "name": "Get Settlement Graph (DSA Graph Representation)",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/api/groups/{{groupId}}/settlements/graph", "host": ["{{baseUrl}}"], "path": ["api", "groups", "{{groupId}}", "settlements", "graph"]}
+          }
+        }
+      ]
+    }
+  ]
+}
+

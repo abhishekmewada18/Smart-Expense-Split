@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Expense Split & Settlement System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+            color: white;
+            padding: 1.25rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .brand h1 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+        }
+
+        .brand span {
+            background: #4ade80;
+            color: #052e16;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.2rem 0.5rem;
+            border-radius: 9999px;
+            text-transform: uppercase;
+        }
+
+        .header-links {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 0.875rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.375rem;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.2s;
+        }
+
+        .header-links a:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 1.5rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .group-selector-box {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: var(--card-bg);
+            padding: 0.6rem 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+
+        .group-selector-box label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        select, input, textarea {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            outline: none;
+            background: white;
+        }
+
+        select:focus, input:focus, textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            padding: 0.55rem 1.1rem;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-success {
+            background: var(--success);
+        }
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--border);
+        }
+        .btn-outline:hover {
+            background: #f1f5f9;
+        }
+
+        /* Metric Stats */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .metric-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem 1.25rem;
+            box-shadow: var(--shadow);
+        }
+
+        .metric-card .title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.35rem;
+        }
+
+        .metric-card .value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        .tab-btn {
+            padding: 0.75rem 1.25rem;
+            border: none;
+            background: transparent;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Balance Cards */
+        .balances-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .balance-card {
+            background: var(--card-bg);
+            border-radius: 0.5rem;
+            border: 1px solid var(--border);
+            padding: 1.25rem;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .balance-card.receives {
+            border-left: 4px solid var(--success);
+        }
+
+        .balance-card.owes {
+            border-left: 4px solid var(--danger);
+        }
+
+        .balance-card.settled {
+            border-left: 4px solid var(--text-muted);
+        }
+
+        .balance-card .name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+
+        .balance-card .email {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .balance-stat {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            margin-bottom: 0.35rem;
+        }
+
+        .balance-net {
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px dashed var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.55rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 9999px;
+            text-transform: uppercase;
+        }
+
+        .badge-success { background: #dcfce7; color: #15803d; }
+        .badge-danger { background: #fee2e2; color: #b91c1c; }
+        .badge-neutral { background: #f1f5f9; color: #475569; }
+        .badge-info { background: #e0e7ff; color: #3730a3; }
+
+        /* Suggestions Box */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1.25rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-header h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+        }
+
+        .suggestion-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.9rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 0.375rem;
+            margin-bottom: 0.6rem;
+            background: #fafaf9;
+            transition: all 0.2s;
+        }
+
+        .suggestion-item:hover {
+            border-color: var(--primary);
+            background: #fdf4ff;
+        }
+
+        .suggestion-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.95rem;
+        }
+
+        .suggestion-arrow {
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+
+        th {
+            text-align: left;
+            padding: 0.75rem 1rem;
+            background: #f8fafc;
+            color: var(--text-muted);
+            font-weight: 600;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(2px);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .modal.open {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 0.5rem;
+            width: 100%;
+            max-width: 540px;
+            padding: 1.5rem;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 0.35rem;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            margin-top: 1.25rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .graph-container {
+            width: 100%;
+            height: 340px;
+            border: 1px solid var(--border);
+            border-radius: 0.375rem;
+            background: #ffffff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .alert {
+            padding: 0.75rem 1rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            display: none;
+        }
+        .alert-success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+        .alert-error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="brand">
+        <h1>Smart Expense Splitter</h1>
+        <span>DSA Powered</span>
+    </div>
+    <div class="header-links">
+        <a href="/swagger-ui.html" target="_blank">&#128214; Swagger API Docs</a>
+        <a href="/h2-console" target="_blank">&#128190; Database Console</a>
+    </div>
+</header>
+
+<div class="container">
+    <div id="alertBox" class="alert"></div>
+
+    <div class="top-bar">
+        <div class="group-selector-box">
+            <label for="groupSelect">Active Group:</label>
+            <select id="groupSelect" onchange="onGroupChanged()">
+                <option value="">Loading groups...</option>
+            </select>
+            <button class="btn btn-outline" onclick="openCreateGroupModal()">+ New Group</button>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+            <button class="btn" onclick="openAddExpenseModal()">+ Add Expense</button>
+            <button class="btn btn-success" onclick="openRecordSettlementModal()">&#128178; Record Payment</button>
+        </div>
+    </div>
+
+    <!-- Group Metrics -->
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <div class="title">Total Group Spending</div>
+            <div class="value" id="metricTotalExpense">₹0.00</div>
+        </div>
+        <div class="metric-card">
+            <div class="title">Group Members</div>
+            <div class="value" id="metricMemberCount">0</div>
+        </div>
+        <div class="metric-card">
+            <div class="title">Min Transactions Needed</div>
+            <div class="value" id="metricMinTx">0</div>
+        </div>
+        <div class="metric-card">
+            <div class="title">Settlement Status</div>
+            <div class="value" id="metricStatus" style="font-size: 1.2rem; margin-top: 0.25rem;">Checking...</div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('balancesTab', this)">Balances & Settlements (DSA)</button>
+        <button class="tab-btn" onclick="switchTab('graphTab', this)">Settlement Graph</button>
+        <button class="tab-btn" onclick="switchTab('expensesTab', this)">Expenses</button>
+        <button class="tab-btn" onclick="switchTab('historyTab', this)">Settlement History</button>
+        <button class="tab-btn" onclick="switchTab('membersTab', this)">Members & Users</button>
+    </div>
+
+    <!-- TAB 1: Balances & Smart Settlements -->
+    <div id="balancesTab" class="tab-content active">
+        <div class="card">
+            <div class="card-header">
+                <h2>&#128179; Net Balances (O(1) HashMap Calculated)</h2>
+                <span class="badge badge-info">Rahul pays ₹900 Example Live</span>
+            </div>
+            <div class="balances-grid" id="balancesContainer">
+                <p style="color: var(--text-muted);">Loading member balances...</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2>&#9889; Smart Settlement Suggestions (Greedy Min-Cash-Flow + PriorityQueue)</h2>
+                <span class="badge badge-success">Minimizes Total Transactions</span>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                Using two PriorityQueues (Max-Heap of Creditors vs Max-Heap of Debtors) to greedy-match highest creditor with highest debtor.
+            </p>
+            <div id="suggestionsContainer">
+                <p style="color: var(--text-muted);">No settlements required. All balances settled!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 2: Settlement Graph -->
+    <div id="graphTab" class="tab-content">
+        <div class="card">
+            <div class="card-header">
+                <h2>&#128200; Directed Debt Settlement Graph</h2>
+                <span class="badge badge-info">Vertices = Users, Directed Edges = Payments</span>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+                Green vertices = Creditors (should receive money), Red vertices = Debtors (owe money), Arrows = Optimal settlement payment flow.
+            </p>
+            <div class="graph-container">
+                <canvas id="settlementCanvas"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 3: Expenses -->
+    <div id="expensesTab" class="tab-content">
+        <div class="card">
+            <div class="card-header">
+                <h2>&#128221; Group Expenses</h2>
+                <button class="btn" onclick="openAddExpenseModal()">+ Add Expense</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th>Paid By</th>
+                        <th>Split Type</th>
+                        <th>Amount</th>
+                        <th>Splits Breakdown</th>
+                    </tr>
+                </thead>
+                <tbody id="expensesTableBody">
+                    <tr><td colspan="6" style="text-align:center;">Loading expenses...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- TAB 4: Settlement History -->
+    <div id="historyTab" class="tab-content">
+        <div class="card">
+            <div class="card-header">
+                <h2>&#128196; Recorded Settlement History</h2>
+                <button class="btn btn-success" onclick="openRecordSettlementModal()">&#128178; Record Payment</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Payer (Debtor)</th>
+                        <th>Recipient (Creditor)</th>
+                        <th>Amount</th>
+                        <th>Notes</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="historyTableBody">
+                    <tr><td colspan="6" style="text-align:center;">No settlements recorded yet.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- TAB 5: Members & Users -->
+    <div id="membersTab" class="tab-content">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Group Members</h2>
+                    <button class="btn btn-outline" onclick="openAddMemberModal()">+ Add Member</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="membersTableBody">
+                        <tr><td colspan="3">Loading members...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2>All Registered Users</h2>
+                    <button class="btn btn-outline" onclick="openCreateUserModal()">+ Register User</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <tr><td colspan="4">Loading users...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Add Expense -->
+<div id="addExpenseModal" class="modal">
+    <div class="modal-content">
+        <div class="card-header">
+            <h2>Add New Expense</h2>
+            <button class="btn-outline" style="border:none; cursor:pointer; font-size:1.2rem;" onclick="closeModal('addExpenseModal')">&times;</button>
+        </div>
+        <form id="addExpenseForm" onsubmit="submitExpense(event)">
+            <div class="form-group">
+                <label>Description</label>
+                <input type="text" id="expDesc" placeholder="e.g. Dinner at Beachside Shack" required>
+            </div>
+            <div class="form-group">
+                <label>Total Amount (₹)</label>
+                <input type="number" id="expAmount" step="0.01" min="0.01" placeholder="900.00" required oninput="renderSplitInputs()">
+            </div>
+            <div class="form-group">
+                <label>Paid By</label>
+                <select id="expPaidBy" required></select>
+            </div>
+            <div class="form-group">
+                <label>Split Type</label>
+                <select id="expSplitType" onchange="renderSplitInputs()" required>
+                    <option value="EQUAL">EQUAL (Split equally among all participants)</option>
+                    <option value="EXACT">EXACT (Specify exact amount for each member)</option>
+                    <option value="PERCENTAGE">PERCENTAGE (Specify percentage for each member)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Participants & Splits</label>
+                <div id="splitsContainer" style="background:#f8fafc; padding:0.75rem; border-radius:0.375rem; border:1px solid var(--border);"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('addExpenseModal')">Cancel</button>
+                <button type="submit" class="btn">Add Expense</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal: Record Settlement -->
+<div id="recordSettlementModal" class="modal">
+    <div class="modal-content">
+        <div class="card-header">
+            <h2>Record Settlement Payment</h2>
+            <button class="btn-outline" style="border:none; cursor:pointer; font-size:1.2rem;" onclick="closeModal('recordSettlementModal')">&times;</button>
+        </div>
+        <form id="recordSettlementForm" onsubmit="submitSettlement(event)">
+            <div class="form-group">
+                <label>Payer (Debtor)</label>
+                <select id="settlePayer" required></select>
+            </div>
+            <div class="form-group">
+                <label>Recipient (Creditor)</label>
+                <select id="settleReceiver" required></select>
+            </div>
+            <div class="form-group">
+                <label>Amount (₹)</label>
+                <input type="number" id="settleAmount" step="0.01" min="0.01" required>
+            </div>
+            <div class="form-group">
+                <label>Notes</label>
+                <input type="text" id="settleNotes" placeholder="e.g. Paid via UPI">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('recordSettlementModal')">Cancel</button>
+                <button type="submit" class="btn btn-success">Record Payment</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal: Create Group -->
+<div id="createGroupModal" class="modal">
+    <div class="modal-content">
+        <div class="card-header">
+            <h2>Create New Expense Group</h2>
+            <button class="btn-outline" style="border:none; cursor:pointer; font-size:1.2rem;" onclick="closeModal('createGroupModal')">&times;</button>
+        </div>
+        <form id="createGroupForm" onsubmit="submitGroup(event)">
+            <div class="form-group">
+                <label>Group Name</label>
+                <input type="text" id="groupName" placeholder="e.g. Goa Trip" required>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <input type="text" id="groupDesc" placeholder="e.g. Vacation expenses">
+            </div>
+            <div class="form-group">
+                <label>Created By</label>
+                <select id="groupCreator" required></select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('createGroupModal')">Cancel</button>
+                <button type="submit" class="btn">Create Group</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal: Add Member to Group -->
+<div id="addMemberModal" class="modal">
+    <div class="modal-content">
+        <div class="card-header">
+            <h2>Add Member to Group</h2>
+            <button class="btn-outline" style="border:none; cursor:pointer; font-size:1.2rem;" onclick="closeModal('addMemberModal')">&times;</button>
+        </div>
+        <form id="addMemberForm" onsubmit="submitMember(event)">
+            <div class="form-group">
+                <label>Select User to Add</label>
+                <select id="memberUserSelect" required></select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('addMemberModal')">Cancel</button>
+                <button type="submit" class="btn">Add Member</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal: Register User -->
+<div id="createUserModal" class="modal">
+    <div class="modal-content">
+        <div class="card-header">
+            <h2>Register New User</h2>
+            <button class="btn-outline" style="border:none; cursor:pointer; font-size:1.2rem;" onclick="closeModal('createUserModal')">&times;</button>
+        </div>
+        <form id="createUserForm" onsubmit="submitUser(event)">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="userName" placeholder="e.g. John Doe" required>
+            </div>
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="userEmail" placeholder="e.g. john@example.com" required>
+            </div>
+            <div class="form-group">
+                <label>Phone</label>
+                <input type="text" id="userPhone" placeholder="e.g. 9876543210">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('createUserModal')">Cancel</button>
+                <button type="submit" class="btn">Register User</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const API_BASE = '/api';
+    let currentGroupId = null;
+    let allUsers = [];
+    let currentMembers = [];
+
+    window.onload = async () => {
+        await loadUsers();
+        await loadGroups();
+    };
+
+    function showAlert(msg, isError = false) {
+        const box = document.getElementById('alertBox');
+        box.textContent = msg;
+        box.className = 'alert ' + (isError ? 'alert-error' : 'alert-success');
+        box.style.display = 'block';
+        setTimeout(() => { box.style.display = 'none'; }, 5000);
+    }
+
+    async function loadUsers() {
+        try {
+            const res = await fetch(`${API_BASE}/users`);
+            const data = await res.json();
+            if (data.success) {
+                allUsers = data.data;
+                renderUsersTable();
+                populateUserDropdowns();
+            }
+        } catch (e) {
+            console.error('Error loading users:', e);
+        }
+    }
+
+    function renderUsersTable() {
+        const tbody = document.getElementById('usersTableBody');
+        tbody.innerHTML = allUsers.map(u => `
+            <tr>
+                <td>#${u.id}</td>
+                <td><strong>${u.name}</strong></td>
+                <td>${u.email}</td>
+                <td>${u.phone || '-'}</td>
+            </tr>
+        `).join('');
+    }
+
+    function populateUserDropdowns() {
+        const options = allUsers.map(u => `<option value="${u.id}">${u.name} (${u.email})</option>`).join('');
+        document.getElementById('groupCreator').innerHTML = options;
+        document.getElementById('memberUserSelect').innerHTML = options;
+    }
+
+    async function loadGroups() {
+        try {
+            const res = await fetch(`${API_BASE}/groups`);
+            const data = await res.json();
+            if (data.success && data.data.length > 0) {
+                const select = document.getElementById('groupSelect');
+                select.innerHTML = data.data.map(g => `<option value="${g.id}">${g.name}</option>`).join('');
+                currentGroupId = data.data[0].id;
+                select.value = currentGroupId;
+                await onGroupChanged();
+            }
+        } catch (e) {
+            console.error('Error loading groups:', e);
+        }
+    }
+
+    async function onGroupChanged() {
+        currentGroupId = document.getElementById('groupSelect').value;
+        if (!currentGroupId) return;
+
+        await loadGroupMembers();
+        await loadBalances();
+        await loadSuggestions();
+        await loadExpenses();
+        await loadHistory();
+        await loadGraph();
+    }
+
+    async function loadGroupMembers() {
+        try {
+            const res = await fetch(`${API_BASE}/groups/${currentGroupId}/members`);
+            const data = await res.json();
+            if (data.success) {
+                currentMembers = data.data;
+                document.getElementById('metricMemberCount').textContent = currentMembers.length;
+
+                // Render table
+                document.getElementById('membersTableBody').innerHTML = currentMembers.map(m => `
+                    <tr>
+                        <td><strong>${m.userName}</strong></td>
+                        <td>${m.userEmail}</td>
+                        <td>
+                            <button class="btn btn-outline" style="padding:0.25rem 0.5rem; font-size:0.75rem; color:var(--danger);" onclick="removeMember(${m.userId})">Remove</button>
+                        </td>
+                    </tr>
+                `).join('');
+
+                // Populate expense payer & settlement dropdowns
+                const memberOptions = currentMembers.map(m => `<option value="${m.userId}">${m.userName}</option>`).join('');
+                document.getElementById('expPaidBy').innerHTML = memberOptions;
+                document.getElementById('settlePayer').innerHTML = memberOptions;
+                document.getElementById('settleReceiver').innerHTML = memberOptions;
+
+                renderSplitInputs();
+            }
+        } catch (e) {
+            console.error('Error loading members:', e);
+        }
+    }
+
+    async function loadBalances() {
+        try {
+            const res = await fetch(`${API_BASE}/groups/${currentGroupId}/balances`);
+            const data = await res.json();
+            if (data.success) {
+                const summary = data.data;
+                document.getElementById('metricTotalExpense').textContent = `₹${summary.totalGroupExpense.toFixed(2)}`;
+
+                const statusEl = document.getElementById('metricStatus');
+                if (summary.settled) {
+                    statusEl.innerHTML = '<span class="badge badge-success">Fully Settled</span>';
+                } else {
+                    statusEl.innerHTML = '<span class="badge badge-danger">Settlement Pending</span>';
+                }
+
+                const container = document.getElementById('balancesContainer');
+                container.innerHTML = summary.memberBalances.map(mb => {
+                    let cardClass = 'settled';
+                    let badgeClass = 'badge-neutral';
+                    let statusText = 'Settled';
+
+                    if (mb.status === 'SHOULD_RECEIVE') {
+                        cardClass = 'receives';
+                        badgeClass = 'badge-success';
+                        statusText = 'Should Receive';
+                    } else if (mb.status === 'OWES') {
+                        cardClass = 'owes';
+                        badgeClass = 'badge-danger';
+                        statusText = 'Owes';
+                    }
+
+                    return `
+                        <div class="balance-card ${cardClass}">
+                            <div class="name">${mb.userName}</div>
+                            <div class="email">${mb.userEmail}</div>
+                            <div class="balance-stat">
+                                <span>Total Paid:</span>
+                                <strong>₹${mb.totalPaid.toFixed(2)}</strong>
+                            </div>
+                            <div class="balance-stat">
+                                <span>Total Share Owed:</span>
+                                <strong>₹${mb.totalOwed.toFixed(2)}</strong>
+                            </div>
+                            <div class="balance-net">
+                                <span class="badge ${badgeClass}">${statusText}</span>
+                                <span style="font-size:1.2rem; font-weight:700;">₹${Math.abs(mb.netBalance).toFixed(2)}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        } catch (e) {
+            console.error('Error loading balances:', e);
+        }
+    }
+
+    async function loadSuggestions() {
+        try {
+            const res = await fetch(`${API_BASE}/groups/${currentGroupId}/settlements/suggestions`);
+            const data = await res.json();
+            if (data.success) {
+                const list = data.data;
+                document.getElementById('metricMinTx').textContent = list.length;
+
+                const container = document.getElementById('suggestionsContainer');
+                if (list.length === 0) {
+                    container.innerHTML = '<p style="color:var(--text-muted); padding:1rem; text-align:center;">&#10004; All debts are settled! No payments needed.</p>';
+                    return;
+                }
+
+                container.innerHTML = list.map(s => `
+                    <div class="suggestion-item">
+                        <div class="suggestion-info">
+                            <strong>${s.fromUserName}</strong>
+                            <span class="suggestion-arrow">&#10142;</span>
+                            <span>pays</span>
+                            <strong>${s.toUserName}</strong>
+                            <span class="badge badge-info" style="font-size:0.95rem;">₹${s.amount.toFixed(2)}</span>
+                        </div>
+                        <button class="btn btn-success" style="padding:0.35rem 0.8rem; font-size:0.8rem;"
+                                onclick="quickSettle(${s.fromUserId}, ${s.toUserId}, ${s.amount}, '${s.fromUserName}', '${s.toUserName}')">
+                            &#10004; Settle Now
+                        </button>
+                    </div>
+                `).join('');
+            }
+        } catch (e) {
+            console.error('Error loading suggestions:', e);
+        }
+    }
+
+    async function loadExpenses() {
+        try {
+            const res = await fetch(`${API_BASE}/groups/${currentGroupId}/expenses`);
+            const data = await res.json();
+            if (data.success) {
+                const tbody = document.getElementById('expensesTableBody');
+                if (data.data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No expenses added yet.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.data.map(exp => {
+                    const splitDetails = exp.splits.map(s => `${s.userName}: ₹${s.amount.toFixed(2)}`).join(', ');
+                    return `
+                        <tr>
+                            <td>${exp.expenseDate}</td>
+                            <td><strong>${exp.description}</strong></td>
+                            <td>${exp.paidByName}</td>
+                            <td><span class="badge badge-info">${exp.splitType}</span></td>
+                            <td><strong>₹${exp.totalAmount.toFixed(2)}</strong></td>
+                            <td style="font-size:0.8rem; color:var(--text-muted);">${splitDetails}</td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+        } catch (e) {
+            console.error('Error loading expenses:', e);
+        }
+    }
+
+    async function loadHistory() {
+        try {
+            const res = await fetch(`${API_BASE}/groups/${currentGroupId}/settlements/history`);
+            const data = await res.json();
+            if (data.success) {
+                const tbody = document.getElementById('historyTableBody');
+                if (data.data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No settlements recorded yet.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.data.map(s => `
+                    <tr>
+                        <td>${s.settlementDate}</td>
+                        <td><strong>${s.paidByName}</strong></td>
+                        <td><strong>${s.paidToName}</strong></td>
+                        <td><strong style="color:var(--success);">₹${s.amount.toFixed(2)}</strong></td>
+                        <td>${s.notes || '-'}</td>
+                        <td><span class="badge badge-success">${s.status}</span></td>
+                    </tr>
+                `).join('');
+            }
+        } catch (e) {
+            console.error('Error loading history:', e);
+        }
+    }
+
+    async function loadGraph() {
+        try {
+            const res = await fetch(`${API_BASE}/groups/${currentGroupId}/settlements/graph`);
+            const data = await res.json();
+            if (data.success) {
+                drawGraph(data.data);
+            }
+        } catch (e) {
+            console.error('Error loading graph:', e);
+        }
+    }
+
+    function drawGraph(graphData) {
+        const canvas = document.getElementById('settlementCanvas');
+        const ctx = canvas.getContext('2d');
+        const rect = canvas.parentElement.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = 340;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const nodes = graphData.vertices;
+        const edges = graphData.edges;
+        if (!nodes || nodes.length === 0) return;
+
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const radius = Math.min(centerX, centerY) - 70;
+
+        const positions = {};
+        nodes.forEach((node, i) => {
+            const angle = (2 * Math.PI / nodes.length) * i - Math.PI / 2;
+            positions[node.userId] = {
+                x: centerX + radius * Math.cos(angle),
+                y: centerY + radius * Math.sin(angle),
+                name: node.userName,
+                balance: node.netBalance,
+                role: node.role
+            };
+        });
+
+        // Draw edges (arrows)
+        edges.forEach(edge => {
+            const from = positions[edge.fromUserId];
+            const to = positions[edge.toUserId];
+            if (!from || !to) return;
+
+            const angle = Math.atan2(to.y - from.y, to.x - from.x);
+            const startX = from.x + 28 * Math.cos(angle);
+            const startY = from.y + 28 * Math.sin(angle);
+            const endX = to.x - 28 * Math.cos(angle);
+            const endY = to.y - 28 * Math.sin(angle);
+
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(endX, endY);
+            ctx.strokeStyle = '#6366f1';
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+
+            // Arrow head
+            const arrowSize = 10;
+            ctx.beginPath();
+            ctx.moveTo(endX, endY);
+            ctx.lineTo(endX - arrowSize * Math.cos(angle - Math.PI / 6), endY - arrowSize * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(endX - arrowSize * Math.cos(angle + Math.PI / 6), endY - arrowSize * Math.sin(angle + Math.PI / 6));
+            ctx.fillStyle = '#6366f1';
+            ctx.fill();
+
+            // Edge label (amount)
+            const midX = (startX + endX) / 2;
+            const midY = (startY + endY) / 2;
+            ctx.font = 'bold 12px Inter';
+            ctx.fillStyle = '#1e1b4b';
+            ctx.fillText(`₹${edge.amount.toFixed(2)}`, midX + 8, midY - 6);
+        });
+
+        // Draw vertices (nodes)
+        nodes.forEach(node => {
+            const pos = positions[node.userId];
+            ctx.beginPath();
+            ctx.arc(pos.x, pos.y, 26, 0, 2 * Math.PI);
+
+            if (node.role === 'CREDITOR') {
+                ctx.fillStyle = '#10b981'; // Green
+            } else if (node.role === 'DEBTOR') {
+                ctx.fillStyle = '#ef4444'; // Red
+            } else {
+                ctx.fillStyle = '#94a3b8'; // Grey
+            }
+            ctx.fill();
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // Node name
+            ctx.fillStyle = '#0f172a';
+            ctx.font = 'bold 12px Inter';
+            ctx.textAlign = 'center';
+            ctx.fillText(pos.name, pos.x, pos.y + 40);
+
+            // Node initial inside
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 14px Inter';
+            ctx.fillText(pos.name.charAt(0), pos.x, pos.y + 5);
+        });
+    }
+
+    function renderSplitInputs() {
+        const type = document.getElementById('expSplitType').value;
+        const container = document.getElementById('splitsContainer');
+        const total = parseFloat(document.getElementById('expAmount').value) || 0;
+
+        if (currentMembers.length === 0) {
+            container.innerHTML = '<p>No members in group.</p>';
+            return;
+        }
+
+        if (type === 'EQUAL') {
+            const share = currentMembers.length > 0 ? (total / currentMembers.length).toFixed(2) : 0;
+            container.innerHTML = `
+                <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.5rem;">
+                    Each member pays equal share: <strong>₹${share}</strong>
+                </p>
+                ${currentMembers.map(m => `
+                    <div style="display:flex; justify-content:space-between; padding:0.25rem 0; font-size:0.85rem;">
+                        <span>${m.userName}</span>
+                        <span>₹${share}</span>
+                    </div>
+                `).join('')}
+            `;
+        } else if (type === 'EXACT') {
+            container.innerHTML = currentMembers.map(m => `
+                <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.4rem;">
+                    <span style="flex:1; font-size:0.85rem;">${m.userName}</span>
+                    <input type="number" step="0.01" min="0" placeholder="Exact ₹" class="exact-split-input" data-userid="${m.userId}" style="width:110px;" required>
+                </div>
+            `).join('');
+        } else if (type === 'PERCENTAGE') {
+            container.innerHTML = currentMembers.map(m => `
+                <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.4rem;">
+                    <span style="flex:1; font-size:0.85rem;">${m.userName}</span>
+                    <input type="number" step="0.01" min="0" max="100" placeholder="%" class="percent-split-input" data-userid="${m.userId}" style="width:110px;" required>
+                </div>
+            `).join('');
+        }
+    }
+
+    async function submitExpense(e) {
+        e.preventDefault();
+        const desc = document.getElementById('expDesc').value;
+        const amount = parseFloat(document.getElementById('expAmount').value);
+        const paidById = parseInt(document.getElementById('expPaidBy').value);
+        const splitType = document.getElementById('expSplitType').value;
+
+        let splits = [];
+        if (splitType === 'EQUAL') {
+            splits = currentMembers.map(m => ({ userId: m.userId }));
+        } else if (splitType === 'EXACT') {
+            document.querySelectorAll('.exact-split-input').forEach(inp => {
+                splits.push({
+                    userId: parseInt(inp.dataset.userid),
+                    amount: parseFloat(inp.value)
+                });
+            });
+        } else if (splitType === 'PERCENTAGE') {
+            document.querySelectorAll('.percent-split-input').forEach(inp => {
+                splits.push({
+                    userId: parseInt(inp.dataset.userid),
+                    percentage: parseFloat(inp.value)
+                });
+            });
+        }
+
+        try {
+            const res = await fetch(`${API_BASE}/groups/${currentGroupId}/expenses`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    description: desc,
+                    totalAmount: amount,
+                    paidById: paidById,
+                    splitType: splitType,
+                    splits: splits
+                })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showAlert('Expense added successfully!');
+                closeModal('addExpenseModal');
+                document.getElementById('addExpenseForm').reset();
+                await onGroupChanged();
+            } else {
+                showAlert(data.message || 'Error adding expense', true);
+            }
+        } catch (err) {
+            showAlert(err.message, true);
+        }
+    }
+
+    function quickSettle(fromId, toId, amount, fromName, toName) {
+        document.getElementById('settlePayer').value = fromId;
+        document.getElementById('settleReceiver').value = toId;
+        document.getElementById('settleAmount').value = amount;
+        document.getElementById('settleNotes').value = `Settlement from ${fromName} to ${toName}`;
+        openModal('recordSettlementModal');
+    }
+
+    async function submitSettlement(e) {
+        e.preventDefault();
+        const payerId = parseInt(document.getElementById('settlePayer').value);
+        const receiverId = parseInt(document.getElementById('settleReceiver').value);
+        const amount = parseFloat(document.getElementById('settleAmount').value);
+        const notes = document.getElementById('settleNotes').value;
+
+        try {
+            const res = await fetch(`${API_BASE}/groups/${currentGroupId}/settlements`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    paidById: payerId,
+                    paidToId: receiverId,
+                    amount: amount,
+                    notes: notes
+                })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showAlert('Payment recorded successfully!');
+                closeModal('recordSettlementModal');
+                document.getElementById('recordSettlementForm').reset();
+                await onGroupChanged();
+            } else {
+                showAlert(data.message || 'Error recording settlement', true);
+            }
+        } catch (err) {
+            showAlert(err.message, true);
+        }
+    }
+
+    async function submitGroup(e) {
+        e.preventDefault();
+        const name = document.getElementById('groupName').value;
+        const desc = document.getElementById('groupDesc').value;
+        const creatorId = parseInt(document.getElementById('groupCreator').value);
+
+        try {
+            const res = await fetch(`${API_BASE}/groups`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: name,
+                    description: desc,
+                    createdById: creatorId
+                })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showAlert(`Group '${data.data.name}' created!`);
+                closeModal('createGroupModal');
+                document.getElementById('createGroupForm').reset();
+                await loadGroups();
+            } else {
+                showAlert(data.message || 'Error creating group', true);
+            }
+        } catch (err) {
+            showAlert(err.message, true);
+        }
+    }
+
+    async function submitMember(e) {
+        e.preventDefault();
+        const userId = parseInt(document.getElementById('memberUserSelect').value);
+
+        try {
+            const res = await fetch(`${API_BASE}/groups/${currentGroupId}/members`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: userId })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showAlert(`Member '${data.data.userName}' added to group!`);
+                closeModal('addMemberModal');
+                await onGroupChanged();
+            } else {
+                showAlert(data.message || 'Error adding member', true);
+            }
+        } catch (err) {
+            showAlert(err.message, true);
+        }
+    }
+
+    async function removeMember(userId) {
+        if (!confirm('Are you sure you want to remove this member?')) return;
+        try {
+            const res = await fetch(`${API_BASE}/groups/${currentGroupId}/members/${userId}`, {
+                method: 'DELETE'
+            });
+            const data = await res.json();
+            if (data.success) {
+                showAlert('Member removed successfully');
+                await onGroupChanged();
+            } else {
+                showAlert(data.message, true);
+            }
+        } catch (err) {
+            showAlert(err.message, true);
+        }
+    }
+
+    async function submitUser(e) {
+        e.preventDefault();
+        const name = document.getElementById('userName').value;
+        const email = document.getElementById('userEmail').value;
+        const phone = document.getElementById('userPhone').value;
+
+        try {
+            const res = await fetch(`${API_BASE}/users`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, phone })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showAlert(`User '${data.data.name}' registered!`);
+                closeModal('createUserModal');
+                document.getElementById('createUserForm').reset();
+                await loadUsers();
+            } else {
+                showAlert(data.message || 'Error registering user', true);
+            }
+        } catch (err) {
+            showAlert(err.message, true);
+        }
+    }
+
+    function switchTab(tabId, btn) {
+        document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(tb => tb.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        btn.classList.add('active');
+        if (tabId === 'graphTab') {
+            loadGraph();
+        }
+    }
+
+    function openModal(id) { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+    function openAddExpenseModal() { openModal('addExpenseModal'); }
+    function openRecordSettlementModal() { openModal('recordSettlementModal'); }
+    function openCreateGroupModal() { openModal('createGroupModal'); }
+    function openAddMemberModal() { openModal('addMemberModal'); }
+    function openCreateUserModal() { openModal('createUserModal'); }
+</script>
+</body>
+</html>
+
