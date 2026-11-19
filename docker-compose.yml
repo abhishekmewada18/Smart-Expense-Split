@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  mysqldb:
+    image: mysql:8.0
+    container_name: mysql-expense-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: expense_settlement_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  app:
+    build: .
+    container_name: expense-settlement-app
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysqldb
+    environment:
+      SPRING_PROFILES_ACTIVE: mysql
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/expense_settlement_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+
+volumes:
+  db_data:
